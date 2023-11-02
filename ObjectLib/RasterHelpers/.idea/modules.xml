@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../GITProjects/MFunctions/.idea/MFunctions.iml" filepath="$PROJECT_DIR$/../../GITProjects/MFunctions/.idea/MFunctions.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../GITProjects/Objects/.idea/Objects.iml" filepath="$PROJECT_DIR$/../../GITProjects/Objects/.idea/Objects.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/RasterHelpers.iml" filepath="$PROJECT_DIR$/.idea/RasterHelpers.iml" />
+    </modules>
+  </component>
+</project>
