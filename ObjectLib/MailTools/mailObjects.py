@@ -2,7 +2,7 @@
 import imaplib
 from imapclient import imap_utf7
 import email
-from email.header import decode_header
+from email.header import decode_header, make_header
 
 
 class MailBoxObject:
@@ -15,6 +15,7 @@ class MailBoxObject:
     _mail_dirs = []
     _mail_messages = None
     _mail_ids = []
+    _subjects = []
 
     @property
     def server(self):
@@ -67,7 +68,6 @@ class MailBoxObject:
         self.connect_mail_server(self.server_name, self.server_port, self.server_username, self.server_password)
 
 
-
     @property
     def dirs(self):
         rv, folders = self._mail_server.list()
@@ -89,39 +89,25 @@ class MailBoxObject:
         searched = imap_utf7.encode(folder)
         typ, self._mail_messages = self._mail_server.select(searched)
         num_msgs = int(self._mail_messages[0])
-        prompt = r'There are {} messages in ' + folder
+        prompt = r'Totally {} mails in ' + folder
         print(prompt.format(num_msgs))
         status, message_ids = self._mail_server.search(None,criteria)
         self._mail_ids = message_ids[0].split()
-        print(self._mail_ids)
+        return self._mail_ids
 
+    @property
+    def subjects(self):
+        self._subjects = []
         for message_id in self._mail_ids:
             try:
-                status, message_data = self._mail_server.fetch(self._mail_ids[0],"(RFC822)")
+                status, message_data = self._mail_server.fetch(message_id,"(RFC822)")
             except Exception as err:
                 print("获取邮件失败：%s" % str(err))
             raw_email = message_data[0][1]
             email_message = email.message_from_bytes(raw_email)
-            subject = decode_header(email_message["Subject"][0][0])
-            sender = decode_header(email_message["From"][0][0])
-            recipient = decode_header(email_message["To"][0][0])
-            print(subject)
-
-
-
-
-
-
-    #def mail_dirs()
-
+            subject = make_header(decode_header(email_message["Subject"]))
+            self._subjects.append(subject)
+        return self._subjects
 
 #----
-mo = MailBoxObject()
-imap_server = 'mail.hzau.edu.cn'
-imap_port = 993
-username = 'gexd@mail.hzau.edu.cn'
-password ='Dearxiao915'
-mo.connect_mail_server(imap_server, imap_port, username, password)
-mo.list_server_dirs()
-mo.find_mails_in_folder(r"教学事务/环境法_2021")
 
