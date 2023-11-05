@@ -237,7 +237,7 @@ class DataFrameClass(pd.DataFrame):
    #--------------Stat--------------------------------
    
 
-class ExcelHelper:
+class ExcelObject:
     def __init__(self):
         # 自定义类属性 book 用以存放 excel 数据表
         self._book = xl.Workbook()

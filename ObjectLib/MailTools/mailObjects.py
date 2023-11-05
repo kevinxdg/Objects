@@ -53,19 +53,23 @@ class MailBoxObject:
     def server_password(self, value):
         self._server_password = value
 
-    def connect_mail_server(self, servername, port, username,password):
-        try:
-            self._mail_server = imaplib.IMAP4_SSL(servername, port)
-            self._mail_server.login(username, password)
+
+    def connect(self, servername=None, port=None, username=None, password=None):
+        if not servername is None:
             self._server_name = servername
+        if not port is None:
             self._server_port = port
+        if not username is None:
             self._server_username = username
+        if not password is None:
             self._server_password = password
+        try:
+            self._mail_server = imaplib.IMAP4_SSL(self._server_name, self._server_port)
+            self._mail_server.login(self._server_username, self._server_password)
+
         except Exception as err:
             print('Failure in connection to ' + servername, err)
 
-    def connect(self):
-        self.connect_mail_server(self.server_name, self.server_port, self.server_username, self.server_password)
 
 
     @property
