@@ -297,6 +297,16 @@ class ExcelObject:
     def get_sheet(self, index):
         return self._book.worksheets[index]
 
+    def get_sheet_by_name(self, sname):
+        sheet_id = -1
+        sheet_names = self.sheet_names
+        for iSheet in range(0,self.sheet_count):
+            if sname == sheet_names[iSheet]:
+                sheet_id = iSheet
+                break
+        return sheet_id
+
+
     def is_sheet_exist(self, sname):
         return sname in self._book.sheetnames
 
@@ -469,7 +479,7 @@ class ExcelObject:
                 sheet.cell(i, j).value = sourcematrix[i - rstart, j - cstart]
 
     def copy_DataFrame(self, sourcedataframe, rstart=2, cstart=2, index=None, withtitles=True, withindex=True,
-                      indextitle=''):
+                      indextitle='ID'):
         if index is None:
             sheet = self.active_sheet
         else:
