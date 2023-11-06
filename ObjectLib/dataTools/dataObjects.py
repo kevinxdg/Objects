@@ -101,6 +101,10 @@ class DataFrameClass(pd.DataFrame):
       else:
          return self
 
+    def copy_head(self):
+        tmp = DataFrameClass(columns=self.columns)
+        return tmp
+
     def duplicate(self,times,axis=0):
         dflist = list([])
         for i in range(times):
@@ -197,12 +201,12 @@ class DataFrameClass(pd.DataFrame):
         self.amend_value = a_v
         return self     
     
-    def drop_column(self, index, inplace=False):
+    def drop_column(self, index, inplace=True):
         col_name = self.columns[index]
         self.drop(columns=[col_name],axis=1,inplace=inplace)
         return self
     
-    def drop_row(self, index, inplace=False):
+    def drop_row(self, index, inplace=True):
         row_index = self.index[index]
         self.drop(index=[row_index],axis=0,inplace=inplace)
         return self       
