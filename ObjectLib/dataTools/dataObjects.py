@@ -237,7 +237,52 @@ class DataFrameClass(pd.DataFrame):
         if inplace:
             self.__init__(tmp)
         return tmp
-        
+
+    def get_column_index(self, column):
+        if not column in self.columns:
+            index_column = -1
+        else:
+            for i in range(0,len(self.columns)):
+                if column ==  self.columns[i]:
+                    index_column = i
+                    break
+        return index_column
+
+
+    def _compare(self,column,value,compare_method='equal'):
+        result=False
+        if compare_method == 'column_equal_value' or compare_method == 'equal':
+            result = (column == value)
+        elif compare_method == 'column_include_value' or compare_method == 'include':
+            result = (value in column)
+        elif compare_method == 'column_in_value' or compare_method == 'in':
+            result = (value in column)
+        elif compare_method == 'column_greater_than_value' or compare_method == 'gt':
+            result = (column > value)
+        elif compare_method == 'column_greater_equal_than_value' or compare_method == 'ge':
+            result = (column >= value)
+        elif compare_method == 'column_less_than_value' or compare_method == 'lt':
+            result = (column < value)
+        elif compare_method == 'column_less_equal_than_value' or compare_method == 'le':
+            result = (column <= value)
+
+        return result
+    def filter(self, column_name, value, compare_method='equal'):
+        filter_data = self.copy_head()
+        index_column = self.get_column_index(column_name)
+        if index_column > 0 :
+            for iRow in range(0,self.row_count):
+                column_value = self.iloc[iRow,index_column]
+                if self._compare(column_value,value,compare_method):
+                    row_data = self.rowDataFrame(iRow)
+                    filter_data.append(row_data)
+        return filter_data
+
+
+
+
+
+
    #--------------Stat--------------------------------
    
 
