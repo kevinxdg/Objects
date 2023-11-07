@@ -250,6 +250,10 @@ class ExcelObject:
     def __del__(self):
         self._book.close()
 
+    def new_workbook(self):
+        self._book = xl.Workbook()
+        self._filename = ""
+
     def load_workbook(self, path):
         self._filename = path
         self._book = xl.load_workbook(path)
