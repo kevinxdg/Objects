@@ -251,7 +251,7 @@ class DataFrameClass(pd.DataFrame):
 
     def _compare(self,column,value,compare_method='equal'):
         result=False
-        if compare_method == 'column_equal_value' or compare_method == 'equal':
+        if compare_method == 'column_equal_value' or compare_method == 'equal' or compare_method == 'eq':
             result = (column == value)
         elif compare_method == 'column_include_value' or compare_method == 'include':
             result = (value in column)
