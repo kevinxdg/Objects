@@ -1,6 +1,6 @@
 #coding=utf-8
 
-class stringTool():
+class StringObject():
     def __init__(self, str_value='') -> None:
         self._string = str_value
         
