@@ -4,6 +4,8 @@ from imapclient import imap_utf7
 import email
 from email.header import decode_header
 
+from mailObjects import *
+
 imap_server = 'mail.hzau.edu.cn'
 imap_port = 993
 username = 'gexd@mail.hzau.edu.cn'
@@ -43,6 +45,8 @@ for id in ids:
 
 print(subjects)
 print(len(subjects))
+
+
 #------------
 mail.close()
 mail.logout()

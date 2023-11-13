@@ -4,6 +4,22 @@ from imapclient import imap_utf7
 import email
 from email.header import decode_header, make_header
 
+class EmailObject:
+    _raw_email = None
+
+    def __init__(self, raw_email = None):
+        self._raw_email =  raw_email
+
+    @property
+    def raw_email(self):
+        return self._raw_email
+
+    @property
+    def sender(self):
+        email_from = make_header(decode_header(self._raw_email["From"]))
+        return email_from
+
+
 
 class MailBoxObject:
     """邮箱对象"""
@@ -112,6 +128,18 @@ class MailBoxObject:
             subject = make_header(decode_header(email_message["Subject"]))
             self._subjects.append(subject)
         return self._subjects
+#-------------------------------------------------------------------
+    def get_raw_email(self, email_id):
+        try:
+            status, data = self._mail_server.fetch(email_id, "(RFC822)")
+        except Exception as err:
+            print("获取邮件失败：%s" % str(err))
+        if status == 'OK':
+            raw_email =  email.message_from_bytes(data[0][1])
+        else:
+            raw_email = None
+        return raw_email
+
 
     def _decode_str(self, s):  # 字符编码转换
         value, charset = decode_header(s)[0]
