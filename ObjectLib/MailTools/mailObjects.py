@@ -134,11 +134,12 @@ class MailBoxObject:
             status, data = self._mail_server.fetch(email_id, "(RFC822)")
         except Exception as err:
             print("获取邮件失败：%s" % str(err))
-        if status == 'OK':
-            raw_email =  email.message_from_bytes(data[0][1])
-        else:
-            raw_email = None
+
+        raw_email = email.message_from_bytes(data[0][1])
+
         return raw_email
+
+
 
 
     def _decode_str(self, s):  # 字符编码转换
