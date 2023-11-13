@@ -73,7 +73,7 @@ class ConfigureObject:
         return self._conf.items(self._section)
 
     def _write(self):
-        with open(self.file_path,'w') as fp:
+        with open(self.file_path,'w', encoding='utf-8') as fp:
             self._conf.write(fp)
 
     def get_option_value(self, section=None, option=None):
@@ -104,7 +104,8 @@ class ConfigureObject:
             section = self._section
         if option is None:
             option = self._option
-        self.remove_option(section,option)
+        self._conf.remove_option(section,option)
+        self._write()
 
 
 
