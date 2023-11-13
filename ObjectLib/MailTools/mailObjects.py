@@ -113,5 +113,36 @@ class MailBoxObject:
             self._subjects.append(subject)
         return self._subjects
 
+    def _decode_str(self, s):  # 字符编码转换
+        value, charset = decode_header(s)[0]
+        if charset:
+            value = value.decode(charset)
+        return value
+
+    def _get_att(self, msg):
+        attachment_files = []
+
+        for part in msg.walk():
+            file_name = part.get_filename()  # 获取附件名称类型
+            contType = part.get_content_type()
+
+            if file_name:
+                h = email.header.Header(file_name)
+                dh = email.header.decode_header(h)  # 对附件名称进行解码
+                filename = dh[0][0]
+                if dh[0][1]:
+                    filename = decode_str(str(filename, dh[0][1]))  # 将附件名称可读化
+                    print(filename)
+                    # filename = filename.encode("utf-8")
+                data = part.get_payload(decode=True)  # 下载附件
+                att_file = open('D:\\数模作业\\' + filename, 'wb')  # 在指定目录下创建文件，注意二进制文件需要用wb模式打开
+                attachment_files.append(filename)
+                att_file.write(data)  # 保存附件
+                att_file.close()
+        return attachment_files
+
+
+
+
 #----
 
