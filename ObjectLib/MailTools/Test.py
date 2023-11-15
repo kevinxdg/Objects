@@ -1,9 +1,14 @@
 #coding=utf-8
 import sys
-sys.path.append(r'H:\Python\GITProjects\Objects\ObjectLib\ConfigTools')
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from FuncCommon.pre import *
+
+#sys.path.append(r'H:\Python\GITProjects\Objects\ObjectLib\ConfigTools')
 
 from mailObjects import *
-from configObjects import *
+from Objects.ObjectLib.ConfigTools.configObjects import *
 
 cf = ConfigureObject()
 cf.filename = r'MailProj.ini'
