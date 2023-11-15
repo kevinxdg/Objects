@@ -4,9 +4,9 @@ from imapclient import imap_utf7
 import email
 from email.header import decode_header, make_header
 
+
 class EmailObject:
     _raw_email = None
-
     def __init__(self, raw_email = None):
         self._raw_email =  raw_email
 
@@ -19,6 +19,37 @@ class EmailObject:
         email_from = make_header(decode_header(self._raw_email["From"]))
         return email_from
 
+    @property
+    def receiver(self):
+        email_to = make_header(decode_header(self._raw_email["To"]))
+        return email_to
+
+    @property
+    def subject(self):
+        subject = make_header(decode_header(self._raw_email["Subject"]))
+        return subject
+
+    def _get_att(self, msg):
+        attachment_files = []
+
+        for part in msg.walk():
+            file_name = part.get_filename()  # 获取附件名称类型
+            contType = part.get_content_type()
+
+            if file_name:
+                h = email.header.Header(file_name)
+                dh = email.header.decode_header(h)  # 对附件名称进行解码
+                filename = dh[0][0]
+                if dh[0][1]:
+                    filename = decode_str(str(filename, dh[0][1]))  # 将附件名称可读化
+                    print(filename)
+                    # filename = filename.encode("utf-8")
+                data = part.get_payload(decode=True)  # 下载附件
+                att_file = open('D:\\数模作业\\' + filename, 'wb')  # 在指定目录下创建文件，注意二进制文件需要用wb模式打开
+                attachment_files.append(filename)
+                att_file.write(data)  # 保存附件
+                att_file.close()
+        return attachment_files
 
 
 class MailBoxObject:
@@ -87,7 +118,6 @@ class MailBoxObject:
             print('Failure in connection to ' + servername, err)
 
 
-
     @property
     def dirs(self):
         rv, folders = self._mail_server.list()
@@ -138,7 +168,7 @@ class MailBoxObject:
             raw_email = email.message_from_bytes(data[0][1])
         else:
             raw_email = None
-        return raw_email
+        return EmailObject(raw_email)
 
 
 
@@ -149,27 +179,6 @@ class MailBoxObject:
             value = value.decode(charset)
         return value
 
-    def _get_att(self, msg):
-        attachment_files = []
-
-        for part in msg.walk():
-            file_name = part.get_filename()  # 获取附件名称类型
-            contType = part.get_content_type()
-
-            if file_name:
-                h = email.header.Header(file_name)
-                dh = email.header.decode_header(h)  # 对附件名称进行解码
-                filename = dh[0][0]
-                if dh[0][1]:
-                    filename = decode_str(str(filename, dh[0][1]))  # 将附件名称可读化
-                    print(filename)
-                    # filename = filename.encode("utf-8")
-                data = part.get_payload(decode=True)  # 下载附件
-                att_file = open('D:\\数模作业\\' + filename, 'wb')  # 在指定目录下创建文件，注意二进制文件需要用wb模式打开
-                attachment_files.append(filename)
-                att_file.write(data)  # 保存附件
-                att_file.close()
-        return attachment_files
 
 
 
