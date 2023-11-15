@@ -2,7 +2,8 @@
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 from FuncCommon.pre import *
 
 #sys.path.append(r'H:\Python\GITProjects\Objects\ObjectLib\ConfigTools')
@@ -27,3 +28,4 @@ eo = mo.get_raw_email(b'2')
 
 print(eo.subject)
 print(eo.receiver)
+#print(eo.body_text)

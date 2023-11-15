@@ -7,12 +7,30 @@ from email.header import decode_header, make_header
 
 class EmailObject:
     _raw_email = None
+    _attach_filenames = []
+
     def __init__(self, raw_email = None):
-        self._raw_email =  raw_email
+        self.raw_email =  raw_email
 
     @property
     def raw_email(self):
         return self._raw_email
+
+    @raw_email.setter
+    def raw_email(self, value):
+        self._raw_email = value
+        if not value is None:
+            for part in self._raw_email.walk():
+                file_name = part.get_filename()  # 获取附件名称类型
+                contType = part.get_content_type()
+                if file_name:
+                    tmp_filename = imap_utf7.decode(file_name)
+                    print(tmp_filename)
+                else:
+                    print(contType)
+
+
+
 
     @property
     def sender(self):
@@ -28,6 +46,15 @@ class EmailObject:
     def subject(self):
         subject = make_header(decode_header(self._raw_email["Subject"]))
         return subject
+
+    @property
+    def body_text(self):
+        body = make_header(decode_header(self._raw_email["Body"]))
+        return body
+
+
+
+
 
     def _get_att(self, msg):
         attachment_files = []
