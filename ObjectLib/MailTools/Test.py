@@ -2,11 +2,8 @@
 import sys
 import os
 
-#sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
 from FuncCommon.pre import *
 
-#sys.path.append(r'H:\Python\GITProjects\Objects\ObjectLib\ConfigTools')
 
 from mailObjects import *
 from Objects.ObjectLib.ConfigTools.configObjects import *
@@ -24,10 +21,11 @@ mo.server_password = cf.get_option_value(option='password')
 mo.connect()
 
 ids = mo.find_mails_in_folder(r'教学事务/清洁生产原理')
-eo = mo.get_raw_email(b'3')
+for i in range(len(ids)):
+    eo = mo.get_raw_email(ids[i])
+    print(eo.body_text)
+    #print(eo.subject)
+    # print(eo.receiver)
+    # eo.parse_message()
+    # print(eo.body)
 
-print(eo.subject)
-print(eo.receiver)
-eo.parse_message()
-#print(eo.body)
-print(eo.body_text)

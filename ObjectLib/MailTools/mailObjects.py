@@ -16,6 +16,7 @@ class EmailObject:
     _body = None
     _body_text = r''
     _body_html = r''
+    _body_images = []
 
     def __init__(self, raw_email = None):
         self.raw_email =  raw_email
@@ -48,16 +49,35 @@ class EmailObject:
         for part in self._raw_email.walk():
             file_name = part.get_filename()  # 获取附件名称类型
             contType = part.get_content_type()
+            mainType = part.get_content_maintype()
+            charset = part.get_content_charset()
+            if charset is None:
+                charset = part.get_charset()
+            if not charset:
+                charset = 'utf-8'
             if file_name:
                 tmp_filename = make_header(decode_header(file_name))  # imap_utf7.decode(file_name)
                 self._attach_filenames.append(tmp_filename)
                 tmp_data = part.get_payload(decode=True)  # 下载附件
                 self._attach_file_data.append(tmp_data)
             else:
-                if contType == r'text/plain':
-                    self._body_text = part.get_payload(decode=True).decode('gbk')
-                elif contType == r'text/html':
-                    self._body_html = part.get_payload(decode=True).decode('gbk')
+                try:
+                    if contType == r'text/plain':
+                        self._body_text = part.get_payload(decode=True).decode(charset).replace(r'&nbsp;','')
+
+                    elif contType == r'text/html':
+                        self._body_html = part.get_payload(decode=True).decode(charset)
+                    elif part.is_multipart():
+                        for spart in part.walk():
+                            sub_contType = spart.get_content_type()
+                            if sub_contType.startswith(r'image'):
+                                tmp_img = spart.get_payload(decode=True)
+                                self._body_images.append(tmp_img)
+
+                                print('Image')
+                except Exception as err:
+                    print(err)
+
 
     def _parse(self):
         self._parse_header()
