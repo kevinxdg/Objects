@@ -137,7 +137,6 @@ class EmailObject:
                 new_name = file_label + r'-%02d'%(iFile+1)
                 old_name, file_exe = str(self._attach_filenames[iFile]).rsplit('.',1)
                 new_filename = new_name + r'.' + file_exe
-                #self._attach_newnames.append(new_filename)
                 self._attach_newnames[iFile] = new_filename
 
         elif not file_names is None:
@@ -148,7 +147,7 @@ class EmailObject:
     def rename_body_images(self, file_label=None, file_names=None):
         if not file_label is None:
             for iFile in range(len(self._body_images)):
-                new_name = file_label + r'%02d'%(iFile+1) + '.png'
+                new_name = file_label + r'-%02d'%(iFile+1) + '.png'
                 self._body_image_filenames.append(new_name)
         else:
             self._body_image_filenames = file_names
@@ -156,7 +155,6 @@ class EmailObject:
 
     def save_attachment(self, dir_path, file_label=None, filenames=None):
         self.rename_attachment(file_label,filenames)
-        print(self._attach_newnames)
         for iFile in range(len(self._attach_newnames)):
             fname = self._attach_newnames[iFile]
             file_path = dir_path + "\\" + str(fname)
@@ -301,14 +299,6 @@ class MailBoxObject:
             raw_email = None
         return EmailObject(raw_email)
 
-
-
-
-    def _decode_str(self, s):  # 字符编码转换
-        value, charset = decode_header(s)[0]
-        if charset:
-            value = value.decode(charset)
-        return value
 
 
 
