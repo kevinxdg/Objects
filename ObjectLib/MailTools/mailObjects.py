@@ -12,11 +12,13 @@ class EmailObject:
     _email_subject = ''
     _attach_file_label = r''
     _attach_filenames = []
+    _attach_newnames = []
     _attach_file_data = []
     _body = None
     _body_text = r''
     _body_html = r''
     _body_images = []
+    _body_image_filenames = []
 
     def __init__(self, raw_email = None):
         self.raw_email =  raw_email
@@ -27,6 +29,19 @@ class EmailObject:
 
     @raw_email.setter
     def raw_email(self, value):
+        self._raw_email = None
+        self._email_from = ''
+        self._email_to = ''
+        self._email_subject = ''
+        self._attach_file_label = r''
+        self._attach_filenames = []
+        self._attach_newnames = []
+        self._attach_file_data = []
+        self._body = None
+        self._body_text = r''
+        self._body_html = r''
+        self._body_images = []
+        self._body_image_filenames = []
         self._raw_email = value
         if not value is None:
             self._parse()
@@ -76,6 +91,7 @@ class EmailObject:
                                 #print('Image')
                 except Exception as err:
                     print(err)
+                self._attach_newnames = self._attach_filenames
 
 
     def _parse(self):
@@ -106,6 +122,62 @@ class EmailObject:
     @property
     def body(self):
         return self._body
+
+    @property
+    def attachment_count(self):
+        return len(self._attach_filenames)
+
+    @property
+    def body_image_count(self):
+        return len(self._body_images)
+
+    def rename_attachment(self, file_label=None, file_names=None):
+        if not file_label is None:
+            for iFile in range(len(self._attach_filenames)):
+                new_name = file_label + r'%02d'%(iFile)
+                old_name, file_exe = self._attach_filenames[iFile].rsplit('.',1)
+                new_filename = new_name + file_exe
+                self._attach_newnames.append(new_filename)
+        elif not file_names is None:
+            self._attach_newnames = file_names
+        else:
+            self._attach_newnames = self._attach_filenames
+
+    def rename_body_images(self, file_label=None, file_names=None):
+        if not file_label is None:
+            for iFile in range(len(self._body_images)):
+                new_name = file_label + r'%02d'%(iFile) + '.png'
+                self._body_image_filenames.append(new_name)
+        else:
+            self._body_image_filenames = file_names
+
+
+    def save_attachment(self, dir_path, file_label=None, filenames=None):
+        self.rename_attachment(file_label,filenames)
+        for iFile in range(len(self._attach_newnames)):
+            fname = self._attach_newnames[iFile]
+            file_path = dir_path + "\\" + str(fname)
+            fp = open(file_path, 'wb')
+            fp.write(self._attach_file_data[iFile])
+            fp.close()
+            iFile += 1
+            print('附件保存成功，' + file_path)
+
+    def save_body_images(self, dir_path, file_label=None, filenames=None):
+        self.rename_body_images(file_label,filenames)
+        for iFile in range(len(self._body_image_filenames)):
+            fname = self._body_image_filenames[iFile]
+            file_path = dir_path + "\\" + fname
+            fp = open(file_path, 'wb')
+            fp.write(self._attach_file_data[iFile])
+            fp.close()
+            iFile += 1
+            print('正文图片保存成功，' + file_path)
+
+
+
+
+
 
 
 class MailBoxObject:

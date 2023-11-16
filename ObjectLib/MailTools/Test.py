@@ -24,6 +24,7 @@ ids = mo.find_mails_in_folder(r'教学事务/清洁生产原理')
 for i in range(len(ids)):
     eo = mo.get_raw_email(ids[i])
     print(eo.body_text)
+    eo.save_attachment(r'D:\TEMP\mails')
     #print(eo.subject)
     # print(eo.receiver)
     # eo.parse_message()
