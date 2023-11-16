@@ -73,8 +73,7 @@ class EmailObject:
                             if sub_contType.startswith(r'image'):
                                 tmp_img = spart.get_payload(decode=True)
                                 self._body_images.append(tmp_img)
-
-                                print('Image')
+                                #print('Image')
                 except Exception as err:
                     print(err)
 
