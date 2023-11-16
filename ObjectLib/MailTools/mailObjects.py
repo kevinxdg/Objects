@@ -135,7 +135,7 @@ class EmailObject:
         if not file_label is None:
             for iFile in range(len(self._attach_filenames)):
                 new_name = file_label + r'%02d'%(iFile)
-                old_name, file_exe = self._attach_filenames[iFile].rsplit('.',1)
+                old_name, file_exe = str(self._attach_filenames[iFile]).rsplit('.',1)
                 new_filename = new_name + file_exe
                 self._attach_newnames.append(new_filename)
         elif not file_names is None:
