@@ -19,6 +19,11 @@ class EmailObject:
     _body_html = r''
     _body_images = []
     _body_image_filenames = []
+    _body_text_filename = ''
+    _dir_attachment = ''
+    _dir_body_image = ''
+    _dir_body_text = ''
+
 
     def __init__(self, raw_email = None):
         self.raw_email =  raw_email
@@ -42,6 +47,11 @@ class EmailObject:
         self._body_html = r''
         self._body_images = []
         self._body_image_filenames = []
+        self._body_text_filename = ''
+        self._dir_attachment = ''
+        self._dir_body_image = ''
+        self._dir_body_text = ''
+
         self._raw_email = value
         if not value is None:
             self._parse()
@@ -130,6 +140,40 @@ class EmailObject:
     @property
     def body_image_count(self):
         return len(self._body_images)
+    
+    @property
+    def attachment_filenames(self):
+        return self._attach_filenames
+
+    @property
+    def attachment_newnames(self):
+        return self._attach_newnames
+
+    @property
+    def body_image_filenames(self):
+        return self._body_image_filenames
+
+    @property
+    def body_image_filenames(self):
+        return self._body_image_filenames
+
+    @property
+    def body_text_filename(self):
+        return self._body_text_filename
+
+    @property
+    def path_attachments(self):
+        return [self._dir_attachment + "\\" + fname for fname in self._attach_newnames]
+
+    @property
+    def path_body_images(self):
+        return [self._dir_body_image + "\\" + fname for fname in self._body_image_filenames]
+
+    @property
+    def path_body_text(self):
+        return self._dir_body_text + "\\" + self._body_text_filename
+
+
 
     def rename_attachment(self, file_label=None, file_names=None):
         if not file_label is None:
@@ -155,6 +199,7 @@ class EmailObject:
 
     def save_attachment(self, dir_path, file_label=None, filenames=None):
         self.rename_attachment(file_label,filenames)
+        self._dir_attachment =dir_path
         for iFile in range(len(self._attach_newnames)):
             fname = self._attach_newnames[iFile]
             file_path = dir_path + "\\" + str(fname)
@@ -166,6 +211,7 @@ class EmailObject:
 
     def save_body_images(self, dir_path, file_label=None, filenames=None):
         self.rename_body_images(file_label,filenames)
+        self._dir_body_image = dir_path
         for iFile in range(len(self._body_image_filenames)):
             fname = self._body_image_filenames[iFile]
             file_path = dir_path + "\\" + fname
@@ -175,10 +221,14 @@ class EmailObject:
             iFile += 1
             print('正文图片保存成功，' + file_path)
 
-
-
-
-
+    def save_body_text(self, dir_path, filename):
+        self._dir_body_text = dir_path
+        self._body_text_filename = filename
+        file_path = dir_path + "\\" + filename
+        fp = open(file_path, 'w', encoding='utf-8')
+        fp.write(self._body_text)
+        fp.close()
+        print('正文文本保存成功，' + file_path)
 
 
 class MailBoxObject:
