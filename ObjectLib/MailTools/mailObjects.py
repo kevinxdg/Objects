@@ -7,7 +7,15 @@ from email.header import decode_header, make_header
 
 class EmailObject:
     _raw_email = None
+    _email_from = ''
+    _email_to = ''
+    _email_subject = ''
+    _attach_file_label = r''
     _attach_filenames = []
+    _attach_file_data = []
+    _body = None
+    _body_text = r''
+    _body_html = r''
 
     def __init__(self, raw_email = None):
         self.raw_email =  raw_email
@@ -20,63 +28,65 @@ class EmailObject:
     def raw_email(self, value):
         self._raw_email = value
         if not value is None:
-            for part in self._raw_email.walk():
-                file_name = part.get_filename()  # 获取附件名称类型
-                contType = part.get_content_type()
-                if file_name:
-                    tmp_filename = imap_utf7.decode(file_name)
-                    print(tmp_filename)
-                else:
-                    print(contType)
+            self._parse()
 
+    def parse_message(self, msg=None):
+        if msg is None:
+            msg = self._raw_email
+        if msg.is_multipart():
+            return self.parse_message(msg.get_payload(0))
+        else:
+            print(msg.get_content_type())
+            return msg.get_payload(None,decode=True)
 
+    def _parse_header(self):
+        self._email_from = make_header(decode_header(self._raw_email["From"]))
+        self._email_to = make_header(decode_header(self._raw_email["To"]))
+        self._email_subject = make_header(decode_header(self._raw_email["Subject"]))
+
+    def _parse_body(self):
+        for part in self._raw_email.walk():
+            file_name = part.get_filename()  # 获取附件名称类型
+            contType = part.get_content_type()
+            if file_name:
+                tmp_filename = make_header(decode_header(file_name))  # imap_utf7.decode(file_name)
+                self._attach_filenames.append(tmp_filename)
+                tmp_data = part.get_payload(decode=True)  # 下载附件
+                self._attach_file_data.append(tmp_data)
+            else:
+                if contType == r'text/plain':
+                    self._body_text = part.get_payload(decode=True).decode('gbk')
+                elif contType == r'text/html':
+                    self._body_html = part.get_payload(decode=True).decode('gbk')
+
+    def _parse(self):
+        self._parse_header()
+        self._parse_body()
 
 
     @property
     def sender(self):
-        email_from = make_header(decode_header(self._raw_email["From"]))
-        return email_from
+        return self._email_from
 
     @property
     def receiver(self):
-        email_to = make_header(decode_header(self._raw_email["To"]))
-        return email_to
+        return self._email_to
 
     @property
     def subject(self):
-        subject = make_header(decode_header(self._raw_email["Subject"]))
-        return subject
+        return self._email_subject
 
     @property
     def body_text(self):
-        body = make_header(decode_header(self._raw_email["Body"]))
-        return body
+        return self._body_text
 
+    @property
+    def body_html(self):
+        return self._body_html
 
-
-
-
-    def _get_att(self, msg):
-        attachment_files = []
-
-        for part in msg.walk():
-            file_name = part.get_filename()  # 获取附件名称类型
-            contType = part.get_content_type()
-
-            if file_name:
-                h = email.header.Header(file_name)
-                dh = email.header.decode_header(h)  # 对附件名称进行解码
-                filename = dh[0][0]
-                if dh[0][1]:
-                    filename = decode_str(str(filename, dh[0][1]))  # 将附件名称可读化
-                    print(filename)
-                    # filename = filename.encode("utf-8")
-                data = part.get_payload(decode=True)  # 下载附件
-                att_file = open('D:\\数模作业\\' + filename, 'wb')  # 在指定目录下创建文件，注意二进制文件需要用wb模式打开
-                attachment_files.append(filename)
-                att_file.write(data)  # 保存附件
-                att_file.close()
-        return attachment_files
+    @property
+    def body(self):
+        return self._body
 
 
 class MailBoxObject:

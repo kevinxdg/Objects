@@ -24,8 +24,10 @@ mo.server_password = cf.get_option_value(option='password')
 mo.connect()
 
 ids = mo.find_mails_in_folder(r'教学事务/清洁生产原理')
-eo = mo.get_raw_email(b'2')
+eo = mo.get_raw_email(b'3')
 
 print(eo.subject)
 print(eo.receiver)
-#print(eo.body_text)
+eo.parse_message()
+#print(eo.body)
+print(eo.body_text)
