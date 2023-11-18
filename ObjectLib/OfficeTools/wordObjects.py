@@ -82,6 +82,9 @@ class WordObject:
         self._doc_path = value
         self.load_doc(self._doc_path)
 
+    def insert_txt(self, txt):
+        self._doc.add_paragraph(txt)
+
     def insert_txt_file(self, txt_path, encoding='utf-8'):
         with open(txt_path, 'r', encoding=encoding) as file:
             txt_lines = file.readlines()
