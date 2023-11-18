@@ -109,10 +109,13 @@ class WordObject:
         master = self._doc
         composer = Composer(master)
         new_doc = WordObject(doc_path)
-        composer.append(new_doc.doc)
-        print(self._doc_path)
-        composer.save(self._doc_path)
-        self.load_doc(self._doc_path)
+        try:
+            composer.append(new_doc.doc)
+            composer.save(self._doc_path)
+            self.load_doc(self._doc_path)
+        except Exception as err:
+            print("[Error in Composing]:" + str(err))
+
         #for element in new_doc.doc.element.body:
         #    self._doc.element.body.append(element)
         #try:
