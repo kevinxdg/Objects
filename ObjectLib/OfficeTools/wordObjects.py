@@ -83,13 +83,21 @@ class WordObject:
         self.load_doc(self._doc_path)
 
     def insert_txt(self, txt):
-        self._doc.add_paragraph(txt)
+        para = self._doc.add_paragraph()
+        run = para.add_run(txt)
+        font = run.font
+        font.name = r'宋体'
+
 
     def insert_txt_file(self, txt_path, encoding='utf-8'):
         with open(txt_path, 'r', encoding=encoding) as file:
             txt_lines = file.readlines()
         for txt_line in txt_lines:
-            self._doc.add_paragraph(txt_line)
+            para = self._doc.add_paragraph()
+            run = para.add_run(txt_line)
+            font = run.font
+            font.name = r'宋体'
+
 
     def insert_img(self, img_path):
         section = self._doc.add_section()
