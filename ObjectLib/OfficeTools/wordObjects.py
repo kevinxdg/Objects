@@ -1,7 +1,6 @@
 #coding=utf-8
 import os
 
-
 from docx import Document
 from win32com import client
 from docxcompose.composer import Composer
