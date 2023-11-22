@@ -87,7 +87,6 @@ class WordObject:
             font = run.font
             font.name = font_name
 
-
     def insert_txt_file(self, txt_path, encoding='utf-8', font_name='宋体'):
         with open(txt_path, 'r', encoding=encoding) as file:
             txt_lines = file.readlines()
@@ -97,11 +96,10 @@ class WordObject:
                 font = run.font
                 font.name = font_name
 
-
     def insert_img(self, img_path):
         section = self._doc.add_section()
         img = self._doc.add_picture(img_path)
-        page_width = section.page_width - section.left_margin -  section.right_margin
+        page_width = section.page_width - section.left_margin - section.right_margin
         page_height = section.page_height - section.top_margin - section.bottom_margin
         rw = img.width / page_width
         rh = img.height / page_height
