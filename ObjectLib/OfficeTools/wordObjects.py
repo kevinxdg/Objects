@@ -82,20 +82,20 @@ class WordObject:
         self.load_doc(self._doc_path)
 
     def insert_txt(self, txt, font_name='宋体'):
-        para = self._doc.add_paragraph()
-        run = para.add_run(txt)
-        font = run.font
-        font.name = font_name
+        para = self._doc.add_paragraph(txt)
+        for run in para.runs:
+            font = run.font
+            font.name = font_name
 
 
     def insert_txt_file(self, txt_path, encoding='utf-8', font_name='宋体'):
         with open(txt_path, 'r', encoding=encoding) as file:
             txt_lines = file.readlines()
         for txt_line in txt_lines:
-            para = self._doc.add_paragraph()
-            run = para.add_run(txt_line)
-            font = run.font
-            font.name = font_name
+            para = self._doc.add_paragraph(txt_line)
+            for run in para.runs:
+                font = run.font
+                font.name = font_name
 
 
     def insert_img(self, img_path):
@@ -126,13 +126,27 @@ class WordObject:
         except Exception as err:
             print("[Error in Composing]:" + str(err))
 
-        #for element in new_doc.doc.element.body:
-        #    self._doc.element.body.append(element)
-        #try:
-        #    for sec in new_doc.doc.sections:
-        #        self._doc.add_section(sec)
-        #except:
-        #    pass
+
+    def delete_blank_pages(self):
+        for sec in self._doc.sections:
+            #head = sec.header
+            #foot = sec.footer
+            page = sec._element.getnext()
+            if page is None:
+                continue
+            for element in page.iter():
+                if element.text.strip():
+                    break
+                else:
+                    sec.getparent().remove(sec)
+                    continue
+
+
+
+
+
+
+
 
 
 
