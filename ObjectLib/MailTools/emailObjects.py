@@ -1,5 +1,6 @@
 #coding=utf-8
 import imaplib
+import os.path
 import smtplib
 from imapclient import imap_utf7
 import email
@@ -31,16 +32,6 @@ class EmailMessagePart:
             return self._data.get_filename()
 
     @property
-    def file_new_name(self):
-        if not hasattr(self, "_file_new_name"):
-            self._file_new_name = self.file_org_name
-        return self._file_new_name
-
-    @file_new_name.setter
-    def file_new_name(self, value):
-        self._file_new_name = value
-
-    @property
     def content_string(self):
         return self._data['Content-Disposition']
 
@@ -69,6 +60,25 @@ class EmailMessagePart:
             for sub_part in self._data.walk():
                 sub_parts.append(EmailMessagePart(sub_part))
         return sub_parts
+
+    def set_content_to_text(self,message_text,encoding='utf-8'):
+        self._data = MIMEText(message_text,'plain',encoding)
+
+    def set_content_to_html(self, message_text,encoding='utf-8'):
+        self._data = MIMEText(message_text,'html',encoding)
+
+    def set_content_to_attach_file(self, file_path):
+        file_name = os.path.basename(file_path)
+        with open(file_path, 'rb') as f:
+            self._data = MIMEApplication(f.read(),Name=file_name)
+        self._data['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
+        self._data["Content-Type"] = 'application/octet-stream'
+
+    def set_content_to_img(self,file_path):
+        file_name = os.path.basename(file_path)
+        with open(file_path, 'rb') as f:
+            self._data = MIMEImage(f.read(),_subtype='octet-stream')
+        self._data['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
 
 
 class EmailObject:
@@ -119,6 +129,7 @@ class EmailObject:
     @subject.setter
     def subject(self, value):
         self._raw_email['Subject'] = value
+
 
 
 
