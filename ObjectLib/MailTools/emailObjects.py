@@ -74,7 +74,7 @@ class EmailMessagePart:
         self._data['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
         self._data["Content-Type"] = 'application/octet-stream'
 
-    def set_content_to_img(self,file_path):
+    def set_content_to_img_file(self,file_path):
         file_name = os.path.basename(file_path)
         with open(file_path, 'rb') as f:
             self._data = MIMEImage(f.read(),_subtype='octet-stream')
