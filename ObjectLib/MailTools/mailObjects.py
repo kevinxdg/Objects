@@ -282,7 +282,6 @@ class MailBoxObject:
     def server_password(self, value):
         self._server_password = value
 
-
     def connect(self, servername=None, port=None, username=None, password=None):
         if not servername is None:
             self._server_name = servername
