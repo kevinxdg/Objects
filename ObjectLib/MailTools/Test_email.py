@@ -18,5 +18,5 @@ ids = mo.find_mails_in_folder(r'教学事务/清洁生产原理')
 for id in ids:
     eo = mo.get_raw_email(id)
     #print(eo.subject)
-    eo.save_all_parts(r'D:\TEMP\mails')
+    eo.save_all_parts(r'D:\Temp\mails')
 
