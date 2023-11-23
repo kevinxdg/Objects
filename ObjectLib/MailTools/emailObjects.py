@@ -29,7 +29,8 @@ class EmailMessagePart:
         if self._data is None:
             return None
         else:
-            return str(make_header(decode_header(self._data.get_filename())))
+            return make_header(decode_header(self._data.get_filename()))
+
 
     @property
     def content_string(self):
@@ -102,6 +103,14 @@ class EmailMessagePart:
             self._data = MIMEImage(f.read(), _subtype='octet-stream')
         self._data['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
 
+    def save_to_file(self, dir_out, file_name=None):
+        if file_name is None:
+            file_name = self.file_org_name
+        file_path = dir_out + "\\" + file_name
+        fp = open(file_path, 'wb')
+        fp.write(self.content)
+        fp.close()
+
 
 class EmailObject:
 
@@ -152,7 +161,24 @@ class EmailObject:
     def subject(self, value):
         self._raw_email['Subject'] = value
 
-
+    def save_all_parts(self, dir_out, file_names=None):
+        for iPart in range(len(self._parts)):
+            part = self._parts[iPart]
+            if file_names is None:
+                if part.file_org_name is None:
+                    file_path = dir_out + '\\part_{}'.format(iPart)
+                else:
+                    file_path = dir_out + '\\' + str(part.file_org_name)
+            else:
+                file_path = dir_out + "\\" + file_names[iPart]
+            if part.content_type.startswith('text'):
+                fp = open(file_path, 'w', encoding='utf-8')
+                fp.write(part.content)
+                fp.close()
+            else:
+                fp = open(file_path, 'wb')
+                fp.write(part.content)
+                fp.close()
 
 
 class MailBoxBase:
