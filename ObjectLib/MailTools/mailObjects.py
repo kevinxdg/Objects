@@ -173,8 +173,6 @@ class EmailObject:
     def path_body_text(self):
         return self._dir_body_text + "\\" + self._body_text_filename
 
-
-
     def rename_attachment(self, file_label=None, file_names=None):
         if not file_label is None:
             for iFile in range(len(self._attach_filenames)):
