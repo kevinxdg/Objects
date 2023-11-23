@@ -29,7 +29,7 @@ class EmailMessagePart:
         if self._data is None:
             return None
         else:
-            return self._data.get_filename()
+            return str(make_header(decode_header(self._data.get_filename())))
 
     @property
     def content_string(self):
@@ -48,6 +48,28 @@ class EmailMessagePart:
             return None
         else:
             return self._data.get_content_maintype()
+
+    @property
+    def charset(self):
+        cset = self._data.get_content_charset()
+        if cset is None:
+            cset = self._data.get_charset()
+        if not cset:
+            cset = 'utf-8'
+        return cset
+
+    @property
+    def content(self):
+        if not hasattr(self,'_content'):
+            self._content = None
+        if self._data  is None:
+            self._content = None
+        elif self.content_type.startswith(r'text'):
+            self._content = self._data.get_payload(decode=True).decode(self.charset)
+        elif self.content_type.startswith(r'image'):
+            self._content = self._data.get_payload(decode=True)
+        return self._content
+
 
     @property
     def sub_parts(self):
@@ -77,7 +99,7 @@ class EmailMessagePart:
     def set_content_to_img_file(self,file_path):
         file_name = os.path.basename(file_path)
         with open(file_path, 'rb') as f:
-            self._data = MIMEImage(f.read(),_subtype='octet-stream')
+            self._data = MIMEImage(f.read(), _subtype='octet-stream')
         self._data['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
 
 

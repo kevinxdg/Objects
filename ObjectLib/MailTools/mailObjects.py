@@ -232,8 +232,6 @@ class EmailObject:
         print('正文文本保存成功，' + file_path)
 
 
-
-
 class MailBoxObject:
     """邮箱对象"""
     _mail_server = None
