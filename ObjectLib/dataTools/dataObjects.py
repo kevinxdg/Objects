@@ -207,7 +207,7 @@ class DataFrameClass(pd.DataFrame):
         return self
     
     def drop_row(self, index, inplace=True):
-        row_index = self.index[index]
+        row_index = index #self.index[index]
         self.drop(index=[row_index],axis=0,inplace=inplace)
         return self       
 

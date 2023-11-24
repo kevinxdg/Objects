@@ -1,4 +1,5 @@
 #coding=utf-8
+from datetime import datetime
 import imaplib
 import os.path
 import smtplib
@@ -175,6 +176,13 @@ class EmailObject:
     @subject.setter
     def subject(self, value):
         self._raw_email['Subject'] = value
+
+    @property
+    def date(self):
+        dayt = self._raw_email['Date'][5:16].replace(' ','')
+        result = datetime.strptime(dayt, "%d%b%Y")
+        return result.date()
+
 
     def save_body_text(self, dir_out, file_name, part=None):
         if part is None:
