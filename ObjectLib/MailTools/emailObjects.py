@@ -11,6 +11,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from email.mime.image import MIMEImage
 from email.mime.message import MIMEMessage
+from Objects.ObjectLib.OfficeTools.wordObjects import *
 
 
 class EmailMessagePart:
@@ -109,24 +110,29 @@ class EmailMessagePart:
         self._data['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
 
     def save_to_file(self, dir_out, file_name=None):
+        file_paths = []
         if file_name is None:
             file_name = self.file_org_name
-        file_path = dir_out + "\\" + file_name
+        file_path = os.path.join(dir_out, file_name)
         if self._data.is_multipart():
             sub_parts = self.sub_parts
             for isub in range(len(sub_parts)):
                 sub_part = sub_parts[isub]
                 sub_file_name = "sub_{}_".format(isub) + file_name
                 if sub_part.content_type.startswith(r'image'):
-                    sub_part.save_to_file(dir_out,sub_file_name)
+                    sub_file_paths = sub_part.save_to_file(dir_out, sub_file_name)
+                    file_paths.extend(sub_file_paths)
         elif self.content_type.startswith('text'):
             fp = open(file_path, 'w', encoding='utf-8')
             fp.write(self.content)
             fp.close()
+            file_paths.append(file_path)
         else:
             fp = open(file_path, 'wb')
             fp.write(self.content)
             fp.close()
+            file_paths.append(file_path)
+        return file_paths
 
 class EmailObject:
 
@@ -179,9 +185,9 @@ class EmailObject:
 
     @property
     def date(self):
-        dayt = self._raw_email['Date'][5:16].replace(' ','')
-        result = datetime.strptime(dayt, "%d%b%Y")
-        return result.date()
+        dayt = self._raw_email['Date'][5:25].replace(' ','')
+        result = datetime.strptime(dayt, "%d%b%Y%H:%M:%S")
+        return result
 
 
     def save_body_text(self, dir_out, file_name, part=None):
@@ -194,6 +200,7 @@ class EmailObject:
 
 
     def save_all_parts(self, dir_out, file_names=None,html_on=False):
+        file_paths = []
         for iPart in range(len(self.parts)):
             part = self.parts[iPart]
             if file_names is None:
@@ -212,7 +219,47 @@ class EmailObject:
             else:
                 file_name = file_names[iPart]
             if part.content_type != r'text/html' or html_on:
-                part.save_to_file(dir_out,file_name)
+                part_file_paths = part.save_to_file(dir_out,file_name)
+                file_paths.extend(part_file_paths)
+        return file_paths
+
+    def save_email(self, dir_pool, dir_result, file_name, html_on=False, overwrite=False):
+        file_paths = self.save_all_parts(dir_pool, html_on=html_on)
+        file_result = os.path.join(dir_result, file_name)
+        if os.path.exists(file_result) and not overwrite:
+            print('邮件文件已经存在，且不允许覆盖, {}'.format(file_result))
+        else:
+            doc = WordObject()
+            doc_covertor = WordConvertor()
+            for file in file_paths:
+                ext = os.path.splitext(file)[1]
+                if ext == '.txt':
+                    doc.insert_txt_file(file)
+            doc.save(file_result)
+
+            for file in file_paths:
+                root_path, file_exe = file.rsplit('.', 1)
+                if file_exe == 'doc':
+                    new_path = doc_covertor.doc_to_docx(file)
+                    doc.insert_docx(new_path)
+
+                elif file_exe == 'docx':
+                    doc.insert_docx(file)
+
+                elif file_exe in ['jpg', 'bmp', 'jpge', 'png']:
+                    doc.insert_img(file)
+                elif file_exe == 'pdf':
+                    new_path = doc_covertor.pdf_to_doc(file)
+                    doc.insert_docx(new_path)
+                # doc.delete_blank_pages()
+            doc.save(file_result)
+            print('作业文档已生成，{}'.format(file_result))
+
+
+
+
+
+
 
     def insert_body_text(self, file_path, file_type='plain'):
         with open(file_path,'r',encoding='utf-8') as f:
@@ -248,7 +295,6 @@ class MailBoxBase:
         self._server_port = None
         self._server_username = None
         self._server_password = None
-
 
     @property
     def server(self):
@@ -288,9 +334,6 @@ class MailBoxBase:
 
     def connect(self, servername=None, port=None, username=None, password=None):
         pass
-
-
-
 
 
 class IMAPMailBox(MailBoxBase):
