@@ -206,8 +206,30 @@ class EmailObject:
             if part.content_type != r'text/html' or html_on:
                 part.save_to_file(dir_out,file_name)
 
+    def insert_body_text(self, file_path, file_type='plain'):
+        with open(file_path,'r',encoding='utf-8') as f:
+            msg_part = MIMEText(f.read(),file_type,'utf-8')
+            f.close()
+        self._raw_email.attach(msg_part)
 
+    def insert_attach_files(self, file_paths):
+        for file in file_paths:
+            f = open(file,'rb')
+            part = MIMEApplication(f.read(), Name=os.path.basename(file))
+            part['Content_Type'] = 'application/octet-stream'
+            part["Content-Disposition"] = 'attachment; filename="{}"'.format(os.path.basename(file))
+            self._raw_email.attach(part)
+            f.close()
 
+    def insert_attach_images(self, file_paths):
+        print('Images:', file_paths)
+        for file in file_paths:
+            f = open(file,'rb')
+            part = MIMEImage(f.read(), _subtype='octet-stream')
+            part["Content-Disposition"] = 'attachment; filename="{}"'.format(os.path.basename(file))
+            self._raw_email.attach(part)
+            f.close()
+            print('Images:', file)
 
 
 class MailBoxBase:
@@ -218,10 +240,7 @@ class MailBoxBase:
         self._server_port = None
         self._server_username = None
         self._server_password = None
-        self._mail_dirs = []
-        self._mail_messages = None
-        self._mail_ids = []
-        self._subjects = []
+
 
     @property
     def server(self):
@@ -260,6 +279,21 @@ class MailBoxBase:
         self._server_password = value
 
     def connect(self, servername=None, port=None, username=None, password=None):
+        pass
+
+
+
+
+
+class IMAPMailBox(MailBoxBase):
+
+    def __init__(self):
+        super().__init__()
+        self._mail_dirs = []
+        self._mail_ids = []
+        self._subjects = []
+
+    def connect(self, servername=None, port=None, username=None, password=None):
         if not servername is None:
             self._server_name = servername
         if not port is None:
@@ -275,7 +309,6 @@ class MailBoxBase:
         except Exception as err:
             print('Failure in connection to ' + servername, err)
 
-
     @property
     def dirs(self):
         rv, folders = self._mail_server.list()
@@ -285,13 +318,6 @@ class MailBoxBase:
             last_str = dirstr.split(r'"')
             self._mail_dirs.append(last_str[3])
         return self._mail_dirs
-
-    def list_server_dirs(self):
-        iDir = 0
-        for folder in self.dirs:
-            iDir = iDir + 1
-            print('[%d] %s' %(iDir,folder))
-
 
     def find_mails_in_folder(self, folder, criteria='ALL'):
         searched = imap_utf7.encode(folder)
@@ -303,20 +329,6 @@ class MailBoxBase:
         self._mail_ids = message_ids[0].split()
         return self._mail_ids
 
-    @property
-    def subjects(self):
-        self._subjects = []
-        for message_id in self._mail_ids:
-            try:
-                status, message_data = self._mail_server.fetch(message_id,"(RFC822)")
-            except Exception as err:
-                print("获取邮件失败：%s" % str(err))
-            raw_email = message_data[0][1]
-            email_message = email.message_from_bytes(raw_email)
-            subject = make_header(decode_header(email_message["Subject"]))
-            self._subjects.append(subject)
-        return self._subjects
-#-------------------------------------------------------------------
     def get_raw_email(self, email_id):
         try:
             status, data = self._mail_server.fetch(email_id, "(RFC822)")
@@ -328,6 +340,105 @@ class MailBoxBase:
             raw_email = None
         return EmailObject(raw_email)
 
+class SMTPMailBox(MailBoxBase):
 
-class MailBoxObject(MailBoxBase):
-    pass
+    def __init__(self):
+        super().__init__()
+        self._msg = EmailObject()
+        self._body_text_file = ''
+        self._body_imgs = []
+        self._attachfiles = []
+        self._attach_imgs = []
+
+    def connect(self, servername=None, port=None, username=None, password=None):
+        if not servername is None:
+            self._server_name = servername
+        if not port is None:
+            self._server_port = port
+        if not username is None:
+            self._server_username = username
+        if not password is None:
+            self._server_password = password
+        try:
+            self._mail_server = smtplib.SMTP_SSL(self._server_name, self._server_port)
+            self._mail_server.login(self._server_username, self._server_password)
+
+        except Exception as err:
+            print('Failure in connection to ' + servername, err)
+
+    @property
+    def sender(self):
+        return str(self._msg.sender)
+
+    @sender.setter
+    def sender(self, value):
+        self._msg.sender = value
+
+    @property
+    def reciever(self):
+        return str(self._msg.receiver)
+
+    @reciever.setter
+    def reciever(self, value):
+        self._msg.receiver = value
+
+    @property
+    def subject(self):
+        return self._msg.subject
+    @subject.setter
+    def subject(self, value):
+        self._msg.subject = value
+
+    @property
+    def body_text_file(self):
+        return self._body_text_file
+
+    @body_text_file.setter
+    def body_text_file(self, value):
+        self._body_text_file = value
+
+    @property
+    def attach_images(self):
+        return self._attach_imgs
+
+    @attach_images.setter
+    def attach_images(self, value):
+        self._attach_imgs = value
+
+    @property
+    def attach_files(self):
+        return self._attachfiles
+
+    @attach_files.setter
+    def attach_files(self, value):
+        self._attachfiles = value
+
+    def create_new_mail(self):
+        self._msg = EmailObject()
+        self._body_text_file = ''
+        self._body_imgs = []
+        self._attachfiles = []
+        self._attach_imgs = []
+
+    def compose(self):
+        self._msg.insert_body_text(self._body_text_file, file_type='plain')
+        self._msg.insert_attach_files(self.attach_files)
+        self._msg.insert_attach_images(self.attach_images)
+        return self._msg.data.as_string()
+
+
+    def send(self):
+        try:
+            self._mail_server.sendmail(self.sender, self.reciever,self._msg.data.as_string())
+            print('邮件发送成功! From [%s] To [%s]'%(self.sender, self.reciever))
+            return True
+        except smtplib.SMTPException as err:
+            print('邮件发送失败：{}'.format(err))
+            return False
+
+
+
+
+
+
+

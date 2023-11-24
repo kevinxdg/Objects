@@ -7,7 +7,7 @@ cf.filename = r'MailProj.ini'
 cf.load_config()
 cf.section = r'HZAU_Mail'
 
-mo = MailBoxObject()
+mo = IMAPMailBox()
 mo.server_name = cf.get_option_value(option='imap_server')
 mo.server_port = cf.get_option_value(option='imap_port')
 mo.server_username = cf.get_option_value(option='username')
