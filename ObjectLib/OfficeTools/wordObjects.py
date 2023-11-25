@@ -48,7 +48,9 @@ class WordConvertor:
         parse(pdf_path,doc_path)
         return doc_path
     def __del__(self):
-        self._doc_app.Quit()
+        pass
+        #self._doc_app.Quit()
+
 
 
 class WordObject:

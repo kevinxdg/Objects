@@ -161,7 +161,7 @@ class EmailObject:
 
     @property
     def sender(self):
-        return make_header(decode_header(self._raw_email["From"]))
+        return str(make_header(decode_header(self._raw_email["From"])))
 
     @sender.setter
     def sender(self, value):
@@ -169,7 +169,7 @@ class EmailObject:
 
     @property
     def receiver(self):
-        return make_header(decode_header(self._raw_email["To"]))
+        return str(make_header(decode_header(self._raw_email["To"])))
 
     @receiver.setter
     def receiver(self, value):
@@ -177,7 +177,7 @@ class EmailObject:
 
     @property
     def subject(self):
-        return make_header(decode_header(self._raw_email["Subject"]))
+        return str(make_header(decode_header(self._raw_email["Subject"])))
 
     @subject.setter
     def subject(self, value):
@@ -254,11 +254,6 @@ class EmailObject:
                 # doc.delete_blank_pages()
             doc.save(file_result)
             print('作业文档已生成，{}'.format(file_result))
-
-
-
-
-
 
 
     def insert_body_text(self, file_path, file_type='plain'):
