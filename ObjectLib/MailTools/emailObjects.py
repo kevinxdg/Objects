@@ -467,13 +467,14 @@ class SMTPMailBox(MailBoxBase):
         self._attach_imgs = []
 
     def compose(self):
-        self._msg.insert_body_text(self._body_text_file, file_type='plain')
-        self._msg.insert_attach_files(self.attach_files)
-        self._msg.insert_attach_images(self.attach_images)
-        return self._msg.data.as_string()
+        self.create_new_mail()
+
 
 
     def send(self):
+        self._msg.insert_body_text(self._body_text_file, file_type='plain')
+        self._msg.insert_attach_files(self.attach_files)
+        self._msg.insert_attach_images(self.attach_images)
         try:
             self._mail_server.sendmail(self.sender, self.reciever,self._msg.data.as_string())
             print('邮件发送成功! From [%s] To [%s]'%(self.sender, self.reciever))
