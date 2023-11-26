@@ -256,7 +256,12 @@ class EmailObject:
             print('作业文档已生成，{}'.format(file_result))
 
 
-    def insert_body_text(self, file_path, file_type='plain'):
+    def insert_body_text(self, text, text_type='plain'):
+        msg_part = MIMEText(text, text_type, 'utf-8')
+        self._raw_email.attach(msg_part)
+
+
+    def insert_body_text_file(self, file_path, file_type='plain'):
         with open(file_path,'r',encoding='utf-8') as f:
             msg_part = MIMEText(f.read(),file_type,'utf-8')
             f.close()
@@ -272,15 +277,12 @@ class EmailObject:
             f.close()
 
     def insert_attach_images(self, file_paths):
-        print('Images:', file_paths)
         for file in file_paths:
             f = open(file,'rb')
             part = MIMEImage(f.read(), _subtype='octet-stream')
             part["Content-Disposition"] = 'attachment; filename="{}"'.format(os.path.basename(file))
             self._raw_email.attach(part)
             f.close()
-            print('Images:', file)
-
 
 class MailBoxBase:
 
@@ -392,6 +394,7 @@ class SMTPMailBox(MailBoxBase):
         super().__init__()
         self._msg = EmailObject()
         self._body_text_file = ''
+        self._body_text = ''
         self._body_imgs = []
         self._attachfiles = []
         self._attach_imgs = []
@@ -444,6 +447,14 @@ class SMTPMailBox(MailBoxBase):
         self._body_text_file = value
 
     @property
+    def body_text(self):
+        return self._body_text
+
+    @body_text.setter
+    def body_text(self, value):
+        self._body_text = value
+
+    @property
     def attach_images(self):
         return self._attach_imgs
 
@@ -462,6 +473,7 @@ class SMTPMailBox(MailBoxBase):
     def create_new_mail(self):
         self._msg = EmailObject()
         self._body_text_file = ''
+        self._body_text = ''
         self._body_imgs = []
         self._attachfiles = []
         self._attach_imgs = []
@@ -472,7 +484,12 @@ class SMTPMailBox(MailBoxBase):
 
 
     def send(self):
-        self._msg.insert_body_text(self._body_text_file, file_type='plain')
+        if self._body_text != '':
+            self._msg.insert_body_text(self._body_text, text_type='plain')
+
+        if self._body_text_file != '':
+            self._msg.insert_body_text_file(self._body_text_file, file_type='plain')
+
         self._msg.insert_attach_files(self.attach_files)
         self._msg.insert_attach_images(self.attach_images)
         try:
