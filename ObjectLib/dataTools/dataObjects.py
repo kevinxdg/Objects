@@ -428,23 +428,27 @@ class ExcelObject:
         self.copy_sheet(datasheet)
 
     def cell_values(self, rstart=2, cstart=2, rend=0, cend=0, index=None):
+        values = []
+        valDF = pd.DataFrame(values)
         if index is None:
             sheet = self.active_sheet
         else:
             sheet = self._book.worksheets[index]
-        if rend == 0:
-            rend = sheet.max_row
-        if cend == 0:
-            cend = sheet.max_column
-        cnum = cend - cstart + 1
-        rnum = rend - rstart + 1
-        values = []
-        for i in range(rnum):
-            values.append([None] * cnum)
-        valDF = pd.DataFrame(values)
-        for r in range(rstart, rend + 1):
-            for c in range(cstart, cend + 1):
-                valDF[c - cstart][r - rstart] = sheet.cell(r, c).value
+
+        if rstart <= sheet.max_row:
+            if rend == 0:
+                rend = sheet.max_row
+            if cend == 0:
+                cend = sheet.max_column
+            cnum = cend - cstart + 1
+            rnum = rend - rstart + 1
+            for i in range(rnum):
+                values.append([None] * cnum)
+            valDF = pd.DataFrame(values)
+            for r in range(rstart, rend + 1):
+                for c in range(cstart, cend + 1):
+                    valDF[c - cstart][r - rstart] = sheet.cell(r, c).value
+
         return valDF
 
     def get_columns(self, index=None, cstart=1, cend=0):
