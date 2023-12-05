@@ -270,7 +270,7 @@ class DataFrameClass(pd.DataFrame):
     def filter(self, column_name, value, compare_method='equal'):
         filter_data = self.copy_head()
         index_column = self.get_column_index(column_name)
-        if index_column > 0 :
+        if index_column >= 0 :
             for iRow in range(0,self.row_count):
                 column_value = self.iloc[iRow,index_column]
                 if self._compare(column_value,value,compare_method):
