@@ -278,6 +278,22 @@ class DataFrameClass(pd.DataFrame):
                     filter_data.append(row_data)
         return filter_data
 
+    def merge(self, right, how = 'inner', \
+              on = None, left_on = None, right_on = None, left_index = False, \
+              right_index = False,  sort=False, \
+              suffixes=('_x','_y'), copy=True, indicator=False, validate=None, inplace=True):
+        tmp_dataframe =  super().merge(self.dataframe, right, how = how, \
+              on = on, left_on = left_on, right_on = right_on, left_index = left_index, \
+              right_index = right_index,  sort=sort, \
+              suffixes=suffixes, copy=copy, indicator=indicator, validate=validate)
+        tmp_DFO = DataFrameClass(tmp_dataframe)
+        if inplace:
+            self.__init__(tmp_DFO)
+        return tmp_DFO
+
+
+
+
 
 
    #--------------Stat--------------------------------
