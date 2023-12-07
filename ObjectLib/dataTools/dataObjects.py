@@ -291,6 +291,17 @@ class DataFrameClass(pd.DataFrame):
             self.__init__(tmp_DFO)
         return tmp_DFO
 
+    def find(self, column, value, compare_method='equal'):
+        index_column = self.get_column_index(column)
+        index_list = []
+        for iRow in range(self.row_count):
+            self_value = self.dataframe.iloc[iRow, index_column]
+            if self._compare(self_value, value, compare_method):
+                index_list.append(iRow)
+        return index_list
+
+
+
 
 
 
