@@ -214,10 +214,11 @@ class EmailObject:
                     else:
                         suffix = '.png'
                     file_name = 'part_{}'.format(iPart) + suffix
+                    file_name = file_name.replace(r'：','')
                 else:
-                    file_name = str(part.file_org_name)
+                    file_name = str(part.file_org_name).replace(r'：','')
             else:
-                file_name = file_names[iPart]
+                file_name = file_names[iPart].replace(r'：','')
             if part.content_type != r'text/html' or html_on:
                 part_file_paths = part.save_to_file(dir_out,file_name)
                 file_paths.extend(part_file_paths)
