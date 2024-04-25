@@ -20,6 +20,12 @@ class ConfigureObject:
         #self._path_configs = self._root_configs + '\\' + self._filename
         self._conf.read(self.file_path, encoding='utf-8')
 
+    def load_config_from_file(self, file_name, section):
+        self.filename = file_name
+        self.load_config()
+        self.section = section ##self._conf.hostname
+        return dict(self.all_items)
+
     @property
     def hostname(self):
         return socket.gethostname()
