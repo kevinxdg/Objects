@@ -14,6 +14,7 @@ class ConfigureObject:
         self._conf = configparser.ConfigParser()
         self._section = ''
         self._option = ''
+        self._sub_dir = ''
 
 
     def load_config(self):
@@ -39,6 +40,14 @@ class ConfigureObject:
         self._root_configs = value
 
     @property
+    def sub_dir(self):
+        return self._sub_dir
+
+    @sub_dir.setter
+    def sub_dir(self, value):
+        self._sub_dir = value
+
+    @property
     def filename(self):
         return self._filename
 
@@ -48,7 +57,12 @@ class ConfigureObject:
 
     @property
     def file_path(self):
-        return self._root_configs + '\\' + self._filename
+        file_p = ''
+        if self._sub_dir == '':
+            file_p = self._root_configs + '\\' + self._filename
+        else:
+            file_p = self._root_configs + '\\' + self.sub_dir + "\\" + self._filename
+        return file_p
 
     @property
     def sections(self):
