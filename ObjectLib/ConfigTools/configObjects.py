@@ -14,11 +14,18 @@ class ConfigureObject:
         self._conf = configparser.ConfigParser()
         self._section = ''
         self._option = ''
+        self._sub_dir = ''
 
 
     def load_config(self):
         #self._path_configs = self._root_configs + '\\' + self._filename
         self._conf.read(self.file_path, encoding='utf-8')
+
+    def load_config_from_file(self, file_name, section):
+        self.filename = file_name
+        self.load_config()
+        self.section = section ##self._conf.hostname
+        return dict(self.all_items)
 
     @property
     def hostname(self):
@@ -33,6 +40,14 @@ class ConfigureObject:
         self._root_configs = value
 
     @property
+    def sub_dir(self):
+        return self._sub_dir
+
+    @sub_dir.setter
+    def sub_dir(self, value):
+        self._sub_dir = value
+
+    @property
     def filename(self):
         return self._filename
 
@@ -42,7 +57,12 @@ class ConfigureObject:
 
     @property
     def file_path(self):
-        return self._root_configs + '\\' + self._filename
+        file_p = ''
+        if self._sub_dir == '':
+            file_p = self._root_configs + '\\' + self._filename
+        else:
+            file_p = self._root_configs + '\\' + self.sub_dir + "\\" + self._filename
+        return file_p
 
     @property
     def sections(self):
