@@ -11,7 +11,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from email.mime.image import MIMEImage
 from email.mime.message import MIMEMessage
-from Objects.ObjectLib.OfficeTools.wordObjects import *
+from Objects.ObjectLib.OfficeTools.wordObjects_V2 import *
 
 
 class EmailMessagePart:
