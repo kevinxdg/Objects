@@ -190,13 +190,12 @@ class EmailObject:
         return result
 
 
-    def save_body_text(self, dir_out, file_name, part=None):
-        if part is None:
-            for t_part in self.parts:
-                if t_part.content_type == r'text/plain':
-                    part = t_part
-                    break
+    def save_body_text(self, dir_out, file_name):
+        part = self._raw_email.content
+        if part.content_type == r'text/plain':
             part.save_to_file(dir_out, file_name)
+
+
 
 
     def save_all_parts(self, dir_out, file_names=None,html_on=False):

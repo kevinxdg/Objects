@@ -128,8 +128,8 @@ class WordObject:
             print("[Error in Composing]:" + str(err))
 
     def insert_docx(self, doc_path):
-        new_doc = Document(doc_path)
         try:
+            new_doc = Document(doc_path)
             for element in new_doc.element.body:
                 self._doc.element.body.append(element)
         except Exception as err:
