@@ -70,6 +70,7 @@ class WordObject:
 
 
     def load_doc(self, doc_path):
+        print(doc_path)
         self._doc_path = doc_path
         self._doc = Document(doc_path)
 
@@ -118,6 +119,7 @@ class WordObject:
     def insert_docx(self, doc_path):
         master = self._doc
         composer = Composer(master)
+        print(doc_path)
         new_doc = WordObject(doc_path)
         try:
             composer.append(new_doc.doc)
