@@ -70,7 +70,6 @@ class WordObject:
 
 
     def load_doc(self, doc_path):
-        print(doc_path)
         self._doc_path = doc_path
         self._doc = Document(doc_path)
 
