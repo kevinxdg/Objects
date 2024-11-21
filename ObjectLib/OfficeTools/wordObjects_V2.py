@@ -115,7 +115,7 @@ class WordObject:
             img.height = int(img.height / rh)
         #self._doc.add_page_break()
 
-    def insert_docx(self, doc_path):
+    def insert_docx_org(self, doc_path):
         master = self._doc
         composer = Composer(master)
         print(doc_path)
@@ -127,6 +127,13 @@ class WordObject:
         except Exception as err:
             print("[Error in Composing]:" + str(err))
 
+    def insert_docx(self, doc_path):
+        new_doc = Document(doc_path)
+        try:
+            for element in new_doc.element.body:
+                self._doc.element.body.append(element)
+        except Exception as err:
+            print("[Error in Composing]:" + str(err))
 
     def delete_blank_pages(self):
         for sec in self._doc.sections:
