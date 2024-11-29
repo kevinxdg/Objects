@@ -132,8 +132,10 @@ class WordObject:
             new_doc = Document(doc_path)
             for element in new_doc.element.body:
                 self._doc.element.body.append(element)
+            return ""
         except Exception as err:
             print("[Error in Composing]:" + str(err))
+            return str(err)
 
     def delete_blank_pages(self):
         for sec in self._doc.sections:

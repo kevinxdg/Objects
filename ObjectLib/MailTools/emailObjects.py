@@ -242,10 +242,14 @@ class EmailObject:
                 root_path, file_exe = file.rsplit('.', 1)
                 if file_exe == 'doc':
                     new_path = doc_covertor.doc_to_docx(file)
-                    doc.insert_docx(new_path)
+                    info = doc.insert_docx(new_path)
+                    if info != "":
+                        print("作业文档生成出错：%s" % file_result)
 
                 elif file_exe == 'docx':
-                    doc.insert_docx(file)
+                    info = doc.insert_docx(file)
+                    if info != "":
+                        print("作业文档生成出错：%s" % file_result)
 
                 elif file_exe in ['jpg', 'bmp', 'jpge', 'png']:
                     doc.insert_img(file)
