@@ -7,8 +7,43 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver import Firefox
 #-----
-sys.path.append(r"H:\Python\GITProjects")
+
 from Objects.ObjectLib.ConfigTools.configObjects import *
+
+class CrawEngine:
+
+    def __int__(self):
+        self._conf = ConfigureObject(r'WebDriver.ini')
+        self._conf.load_config()
+        self._driver = None
+        self._driver_name = ''
+
+    @property
+    def driver(self):
+        return self._driver
+
+    @driver.setter
+    def driver(self, value):
+        self._driver_name = value
+        self._conf.section = value
+        options = webdriver.EdgeOptions
+        if value == 'Edge':
+            options = webdriver.EdgeOptions()
+            options.binary_location = self._conf.items['binary_location']
+            service = EdgeService(executable_path=self._conf.items['executable_path'])
+            self._driver = webdriver.Edge(options=options, service=service)
+
+        elif value == 'Firefox':
+            options = webdriver.FirefoxOptions()
+        elif value == 'Chrome':
+            options = webdriver.ChromeOptions()
+
+
+
+
+
+
+
 
 class CrawObject:
 

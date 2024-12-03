@@ -92,6 +92,10 @@ class ConfigureObject:
     def all_items(self):
         return self._conf.items(self._section)
 
+    @property
+    def items(self):
+        return dict(self.all_items)
+
     def _write(self):
         with open(self.file_path,'w', encoding='utf-8') as fp:
             self._conf.write(fp)
